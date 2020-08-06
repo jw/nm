@@ -13,30 +13,18 @@ CONNECTION_INTERFACE = "org.freedesktop.NetworkManager.Settings.Connection"
 
 async def get_connections(bus):
     print("Getting the connections...")
-    settings_introspection = await bus.introspect(
-        NETWORK_MANAGER,
-        SETTINGS_OBJECT
-    )
+    settings_introspection = await bus.introspect(NETWORK_MANAGER, SETTINGS_OBJECT)
     settings_proxy = bus.get_proxy_object(
-        NETWORK_MANAGER,
-        SETTINGS_OBJECT,
-        settings_introspection
+        NETWORK_MANAGER, SETTINGS_OBJECT, settings_introspection
     )
     settings = settings_proxy.get_interface(SETTINGS_INTERFACE)
     connections = await settings.call_list_connections()
     for connection in connections:
-        connection_introspection = await bus.introspect(
-            NETWORK_MANAGER,
-            connection
-        )
+        connection_introspection = await bus.introspect(NETWORK_MANAGER, connection)
         connection_proxy = bus.get_proxy_object(
-            NETWORK_MANAGER,
-            connection,
-            connection_introspection
+            NETWORK_MANAGER, connection, connection_introspection
         )
-        settings_connection = connection_proxy.get_interface(
-            CONNECTION_INTERFACE
-        )
+        settings_connection = connection_proxy.get_interface(CONNECTION_INTERFACE)
         connection_setting = await settings_connection.call_get_settings()
 
         con = connection_setting["connection"]
@@ -45,13 +33,10 @@ async def get_connections(bus):
 
 async def get_state(bus):
     network_manager_introspection = await bus.introspect(
-        NETWORK_MANAGER,
-        NETWORK_MANAGER_OBJECT
+        NETWORK_MANAGER, NETWORK_MANAGER_OBJECT
     )
     network_manager_proxy = bus.get_proxy_object(
-        NETWORK_MANAGER,
-        NETWORK_MANAGER_OBJECT,
-        network_manager_introspection
+        NETWORK_MANAGER, NETWORK_MANAGER_OBJECT, network_manager_introspection
     )
     manager = network_manager_proxy.get_interface(NETWORK_MANAGER)
     state = await manager.call_state()
